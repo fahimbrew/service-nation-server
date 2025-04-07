@@ -74,7 +74,42 @@ async function run() {
     res.send(result);
   })
 
-  // update
+  // server.js or routes/service.js
+  app.put("/service/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      const serviceData = req.body;
+  
+      // Ensure serviceLocation is not undefined
+      if (!serviceData.serviceLocation) {
+        return res.status(400).json({ message: "Service location is required." });
+      }
+  
+      const result = await serviceCollection.updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: {
+            serviceName: serviceData.serviceName,
+            serviceDescription: serviceData.serviceDescription,
+            servicePrice: serviceData.servicePrice,
+            serviceImage: serviceData.serviceImage,
+            serviceLocation: serviceData.serviceLocation,
+          },
+        }
+      );
+  
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ message: "Service not found" });
+      }
+  
+      res.status(200).json({ message: "Service updated successfully" });
+    } catch (error) {
+      console.error("🚨 Error in PUT /service/:id:", error);
+      res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  });
+  
+  
 
 
 
