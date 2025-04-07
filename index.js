@@ -49,6 +49,16 @@ async function run() {
         res.send(result);
     })
 
+     // add a service
+
+   app.post("/services",async(req,res)=>{
+    const services = req.body;
+    const result = await serviceCollection.insertOne(services);
+    res.send(result);
+   })
+
+
+
     // save booking Data
 
     app.post("/bookings",async(req,res)=>{
@@ -78,6 +88,9 @@ async function run() {
           res.status(500).json({ error: "Server error" });
         }
       });
+
+     
+
       
 
     // Connect the client to the server	(optional starting in v4.7)
