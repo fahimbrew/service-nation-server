@@ -108,6 +108,39 @@ async function run() {
       res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
   });
+
+  // Get bookings where serviceProviderEmail matches logged-in user
+app.get("/bookings/provider/:email", async (req, res) => {
+    try {
+      const result = await bookingCollection
+        .find({ userEmail: req.params.email })
+        .toArray();
+      res.send(result);
+    } catch (err) {
+      res.status(500).send({ error: "Server Error" });
+    }
+  });
+  
+  // Update status of a booking
+  app.patch("/bookings/status/:id", async (req, res) => {
+    const { id } = req.params;
+    const { serviceStatus } = req.body;
+  
+    try {
+      const result = await bookingCollection.updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: {
+            serviceStatus,
+          },
+        }
+      );
+      res.send(result);
+    } catch (err) {
+      res.status(500).send({ error: "Failed to update status" });
+    }
+  });
+  
   
   
 
