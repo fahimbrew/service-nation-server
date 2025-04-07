@@ -30,6 +30,7 @@ async function run() {
   try {
     const db = client.db("service-db");
     const serviceCollection = db.collection("services");
+    const bookingCollection = db.collection("bookings");
 
 
 
@@ -40,12 +41,44 @@ async function run() {
         res.send(result);
     })
 
+    // get single service details
     app.get("/service/:id",async(req,res)=>{
         const id = req.params.id;
         const query = {_id:new ObjectId(id)};
         const result = await serviceCollection.findOne(query);
         res.send(result);
     })
+
+    // save booking Data
+
+    app.post("/bookings",async(req,res)=>{
+        const bookings = req.body;
+        const result = await bookingCollection.insertOne(bookings);
+        res.send(result);
+    })
+
+    // get bookings for a user
+
+    app.get("/bookings/:email", async (req, res) => {
+        try {
+          const userEmail = req.params.email;
+      
+          if (!userEmail) {
+            return res.status(400).json({ error: "User email is required" });
+          }
+      
+          const userBookings = await bookingCollection
+            .find({ userEmail })
+            .sort({ serviceTakingDate: -1 })
+            .toArray();
+      
+          res.status(200).json(userBookings);
+        } catch (err) {
+          console.error("Error fetching bookings:", err);
+          res.status(500).json({ error: "Server error" });
+        }
+      });
+      
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
