@@ -10,7 +10,7 @@ const cors = require("cors");
 // middleware
 app.use(express.json());
 app.use(cors({
-    origin:["http://localhost:5173/"],
+    origin:["http://localhost:5173"],
     credentials:true
 }));
 app.use(cookieParser());
@@ -39,6 +39,18 @@ async function run() {
     const bookingCollection = db.collection("bookings");
 
 
+    // jwt token
+
+    app.post("/jwt",(req,res)=>{
+        const user = req.body;
+        const token = jwt.sign(user,"secret",{expiresIn:"5hr"});
+        res
+        .cookie("token",token,{
+            httpOnly:true,
+            secure:process.env.NODE_ENV ==="production",
+        sameSite:process.env.NODE_ENV === "production" ? "none":"strict"
+        })
+    })
 
     // get the services
      
