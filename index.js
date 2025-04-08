@@ -10,7 +10,7 @@ const cors = require("cors");
 // middleware
 app.use(express.json());
 app.use(cors({
-    origin:["http://localhost:5173"],
+    origin:["http://localhost:5173",'https://glowing-cuchufli-a872de.netlify.app'],
     credentials:true
 }));
 app.use(cookieParser());
@@ -85,7 +85,7 @@ async function run() {
     })
 
     // get single service details
-    app.get("/service/:id",verifyToken,async(req,res)=>{
+    app.get("/service/:id",async(req,res)=>{
         const id = req.params.id;
         const query = {_id:new ObjectId(id)};
         const result = await serviceCollection.findOne(query);
@@ -102,17 +102,17 @@ async function run() {
 
    // get services for a specific user for manage crud
 
-   app.get("/services/user/:email",verifyToken, async (req, res) => {
-    const decodedEmail = req.user?.email;
+   app.get("/services/user/:email", async (req, res) => {
+    // const decodedEmail = req.user?.email;
     const { email } = req.params;
-    if(decodedEmail!==email) return res.status(401).send({message:"Unauthorized access"});
+    // if(decodedEmail!==email) return res.status(401).send({message:"Unauthorized access"});
     const userServices = await serviceCollection.find({ serviceProviderEmail: email }).toArray();
     res.send(userServices);
   });
 
   // delete a service
 
-  app.delete("/service/:id",verifyToken,async(req,res)=>{
+  app.delete("/service/:id",async(req,res)=>{
     const id = req.params.id;
     const query = {_id:new ObjectId(id)};
     const result = await serviceCollection.deleteOne(query);
@@ -120,7 +120,7 @@ async function run() {
   })
 
   // server.js or routes/service.js
-  app.put("/service/:id",verifyToken, async (req, res) => {
+  app.put("/service/:id", async (req, res) => {
     try {
       const id = req.params.id;
       const serviceData = req.body;
@@ -167,7 +167,7 @@ app.get("/bookings/provider/:email", async (req, res) => {
   });
   
   // Update status of a booking
-  app.patch("/bookings/status/:id",verifyToken, async (req, res) => {
+  app.patch("/bookings/status/:id", async (req, res) => {
     const { id } = req.params;
     const { serviceStatus } = req.body;
   
@@ -226,9 +226,9 @@ app.get("/bookings/provider/:email", async (req, res) => {
       
 
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
