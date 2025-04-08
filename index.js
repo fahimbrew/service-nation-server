@@ -43,13 +43,25 @@ async function run() {
 
     app.post("/jwt",(req,res)=>{
         const user = req.body;
-        const token = jwt.sign(user,"secret",{expiresIn:"5hr"});
+        const token = jwt.sign(user,process.env.SECRET_KEY,{expiresIn:"5hr"});
         res
         .cookie("token",token,{
             httpOnly:true,
             secure:process.env.NODE_ENV ==="production",
-        sameSite:process.env.NODE_ENV === "production" ? "none":"strict"
+            sameSite:process.env.NODE_ENV === "production" ? "none":"strict"
         })
+        .send({success:true})
+    })
+
+    // logout user and expire token
+    app.get("/logout",(req,res)=>{
+        res
+        .clearCookie("token",{
+          maxAge:0,
+          secure:process.env.NODE_ENV ==="production",
+          sameSite:process.env.NODE_ENV === "production" ? "none":"strict"
+        })
+        .send({success:true})
     })
 
     // get the services
