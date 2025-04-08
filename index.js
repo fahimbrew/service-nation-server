@@ -15,7 +15,20 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
+// verify token
 
+const verifyToken = (req,res,next)=>{
+    const token = req.cookies?.token;
+    // console.log(token);
+    if(!token) return res.status(401).send({message:"Unauthorized access"})
+      jwt.verify(token,process.env.SECRET_KEY,(err,decoded)=>{
+          if(err){
+            return res.status(401).send({message:"Unauthorized access"})
+          } 
+          req.user = decoded;
+      })
+    next();
+  }
 
 app.get("/",(req,res)=>{
     res.send("Hello from the server side")
